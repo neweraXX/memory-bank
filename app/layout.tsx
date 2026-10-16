@@ -18,8 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Memory Bank
           </a>
           <nav>
-            <a href="/">New request</a>
-            <a href="/cases">Case library</a>
+            <a href="/">New<span className="nav-long"> request</span></a>
+            <a href="/cases"><span className="nav-long">Case </span>Library</a>
             <a href="/about">How it works</a>
           </nav>
         </header>

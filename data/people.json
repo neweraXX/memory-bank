@@ -1,10 +1,47 @@
 {
-  "Minh Tran": { "name": "Minh Tran", "role": "Solutions Engineer", "status": "left" },
-  "Sofia Reyes": { "name": "Sofia Reyes", "role": "Integration Engineer", "status": "left" },
-  "Marco Bianchi": { "name": "Marco Bianchi", "role": "Solutions Engineer", "status": "left" },
-  "Priya Nair": { "name": "Priya Nair", "role": "Integration Lead", "status": "active" },
-  "Daniel Okafor": { "name": "Daniel Okafor", "role": "Support Engineer (L2)", "status": "active" },
-  "Linh Pham": { "name": "Linh Pham", "role": "Implementation Manager", "status": "active" },
-  "Tom Becker": { "name": "Tom Becker", "role": "Data Engineer", "status": "active" },
-  "An Nguyen": { "name": "An Nguyen", "role": "Support Engineer (L1)", "status": "active" }
+  "Minh Tran": {
+    "name": "Minh Tran",
+    "role": "Solutions Engineer",
+    "status": "left"
+  },
+  "Sofia Reyes": {
+    "name": "Sofia Reyes",
+    "role": "Integration Engineer",
+    "status": "left"
+  },
+  "Marco Bianchi": {
+    "name": "Marco Bianchi",
+    "role": "Solutions Engineer",
+    "status": "left"
+  },
+  "Priya Nair": {
+    "name": "Priya Nair",
+    "role": "Integration Lead",
+    "status": "active"
+  },
+  "Daniel Okafor": {
+    "name": "Daniel Okafor",
+    "role": "Support Engineer (L2)",
+    "status": "active"
+  },
+  "Linh Pham": {
+    "name": "Linh Pham",
+    "role": "Implementation Manager",
+    "status": "active"
+  },
+  "Tom Becker": {
+    "name": "Tom Becker",
+    "role": "Data Engineer",
+    "status": "active"
+  },
+  "An Nguyen": {
+    "name": "An Nguyen",
+    "role": "Support Engineer (L1)",
+    "status": "active"
+  },
+  "Grace Lim": {
+    "name": "Grace Lim",
+    "role": "Solutions Engineer",
+    "status": "active"
+  }
 }

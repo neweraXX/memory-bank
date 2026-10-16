@@ -56,6 +56,7 @@ export async function analyze(requestText: string): Promise<AnalyzeResult> {
   // Rules are cheap and may have changed since the briefing was cached: recompute.
   const briefing = {
     ...written.briefing,
+    openQuestions: written.briefing.openQuestions.filter((q) => q && !q.includes("[object ")),
     verdict,
     differences: [...ruleDiffs, ...written.briefing.differences.filter((d) => d.source === "ai")],
   };

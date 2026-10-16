@@ -80,6 +80,23 @@ export default function CaseLibrary({ cases }: { cases: PastCase[] }) {
               ))}
             </tbody>
           </table>
+          <div className="library-cards">
+            {shown.map((c) => (
+              <div key={c.id} className="lib-card">
+                <a href={`#${c.id}`} onClick={(e) => (e.preventDefault(), setOpen(c))}>
+                  {c.title}
+                </a>
+                <div className="row small muted">
+                  <span className="mono">{c.id}</span>
+                  <span>{c.type}</span>
+                  <OutcomeBadge c={c} />
+                </div>
+                <div className="small" style={{ marginTop: 4 }}>
+                  <PersonName p={c.owner} /> · {c.estimateDays}d → {c.actualDays}d
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
       {open && <CaseDrawer c={open} onClose={() => setOpen(null)} />}

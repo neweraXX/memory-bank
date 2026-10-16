@@ -125,7 +125,7 @@ export default function MemoryBank({ cases, samples }: { cases: PastCase[]; samp
           aria-label="New client request"
         />
         <div className="row spread">
-          <div className="row">
+          <div className="samples">
             <span className="small muted">Try:</span>
             {samples.map((s) => (
               <button

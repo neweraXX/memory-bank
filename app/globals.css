@@ -476,3 +476,75 @@ table.library th {
   color: var(--muted);
   margin-top: 16px;
 }
+
+/* ---------- small screens ---------- */
+.brand {
+  white-space: nowrap;
+}
+.samples {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.samples .chip {
+  white-space: nowrap;
+}
+.library-cards {
+  display: none;
+}
+.lib-card {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+.lib-card .row {
+  margin-top: 4px;
+}
+@media (max-width: 640px) {
+  .topbar {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .topbar nav {
+    gap: 12px;
+    font-size: 13.5px;
+    flex-wrap: nowrap;
+  }
+  .nav-long {
+    display: none;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .lede {
+    font-size: 14px;
+  }
+  .panel {
+    padding: 14px;
+  }
+  .samples {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -14px;
+    padding: 2px 14px 6px;
+    scrollbar-width: none;
+  }
+  .samples::-webkit-scrollbar {
+    display: none;
+  }
+  .row.spread > .btn {
+    width: 100%;
+  }
+  table.library {
+    display: none;
+  }
+  .library-cards {
+    display: block;
+  }
+  .kv {
+    grid-template-columns: 110px 1fr;
+  }
+  .drawer {
+    padding: 16px;
+  }
+}
