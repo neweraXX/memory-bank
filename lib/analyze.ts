@@ -206,6 +206,17 @@ Return JSON:
 
 // ---------- step 5: verification ----------
 
+// Smaller fallback models sometimes return {"question": "..."} instead of a string.
+function asText(x: unknown): string {
+  if (typeof x === "string") return x.trim();
+  if (x && typeof x === "object") {
+    const o = x as Record<string, unknown>;
+    const v = o.question ?? o.text ?? o.q ?? Object.values(o).find((y) => typeof y === "string");
+    return typeof v === "string" ? v.trim() : "";
+  }
+  return "";
+}
+
 function verify(raw: RawBriefing, verdict: Briefing["verdict"], cases: PastCase[], ruleDiffs: Difference[]) {
   const allowed = new Set(cases.flatMap((c) => [c.id, ...c.timeline.map((e) => e.id)]));
   let dropped = 0;
@@ -218,7 +229,7 @@ function verify(raw: RawBriefing, verdict: Briefing["verdict"], cases: PastCase[
   };
   const keepCited = <T extends { text?: string; cites?: unknown }>(items: T[] = []) =>
     items
-      .map((i) => ({ ...i, text: String(i.text ?? ""), cites: cleanCites(i.cites) }))
+      .map((i) => ({ ...i, text: asText(i.text), cites: cleanCites(i.cites) }))
       .filter((i) => {
         if (i.text && i.cites.length) return true;
         dropped++; // an unsupported claim is removed entirely
@@ -240,7 +251,7 @@ function verify(raw: RawBriefing, verdict: Briefing["verdict"], cases: PastCase[
 
   const briefing: Briefing = {
     verdict,
-    headline: String(raw.headline ?? ""),
+    headline: asText(raw.headline),
     howItWent: keepCited(raw.howItWent),
     differences: [...ruleDiffs, ...extra],
     plan: keepCited(raw.plan),
@@ -250,13 +261,13 @@ function verify(raw: RawBriefing, verdict: Briefing["verdict"], cases: PastCase[
         dropped++;
         return [];
       }
-      return [{ artifact: hit.a.name, fromCase: hit.c.id, why: String(r.why ?? "") }];
+      return [{ artifact: hit.a.name, fromCase: hit.c.id, why: asText(r.why) }];
     }),
     lessons: keepCited(raw.lessons).map((l) => {
       const from = String((l as { from?: string }).from ?? "");
       return { ...l, from, personLeft: people.get(from)?.status === "left" };
     }),
-    openQuestions: (raw.openQuestions ?? []).map(String).slice(0, 5),
+    openQuestions: (raw.openQuestions ?? []).map(asText).filter(Boolean).slice(0, 5),
   };
   return { briefing, dropped };
 }
