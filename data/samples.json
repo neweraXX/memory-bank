@@ -1,0 +1,52 @@
+[
+  {
+    "label": "CRM migration, Vietnamese & Japanese data",
+    "text": "Hi team, Kaito Freight is leaving Salesforce. We need about 150,000 accounts and contacts moved into Kestrel in 3 weeks. Our sales offices are in Hanoi and Tokyo, so a lot of names are in Vietnamese and Japanese. Can you confirm the plan?",
+    "expectTop": [
+      "KST-104",
+      "KST-162",
+      "KST-147"
+    ],
+    "expectVerdict": "strong precedent"
+  },
+  {
+    "label": "Azure AD SSO + same-day leavers",
+    "text": "Our CISO wants single sign-on through Microsoft Entra / Azure AD for 4,000 staff, and anyone who leaves must lose access the same day. We need this live in two weeks for an audit.",
+    "expectTop": [
+      "KST-128"
+    ],
+    "expectVerdict": "strong precedent"
+  },
+  {
+    "label": "Slow dashboard at quarter-end",
+    "text": "Every quarter-end our portfolio dashboard becomes painfully slow, sometimes a minute to load. Finance is furious. Please investigate urgently.",
+    "expectTop": [
+      "KST-125"
+    ],
+    "expectVerdict": "strong precedent"
+  },
+  {
+    "label": "5,000 LPs signing subscription docs",
+    "text": "We are launching Fund IV and need 5,000 limited partners to e-sign subscription documents in Kestrel. Legal is still editing the agreement. First close is in 15 working days.",
+    "expectTop": [
+      "KST-131"
+    ],
+    "expectVerdict": "strong precedent"
+  },
+  {
+    "label": "Workday integration (new system)",
+    "text": "Could Kestrel pull new hires and terminations from Workday every night so that user accounts are created and removed automatically?",
+    "expectTop": [
+      "KST-128",
+      "KST-170",
+      "KST-112"
+    ],
+    "expectVerdict": "partial precedent"
+  },
+  {
+    "label": "Website translation (never done)",
+    "text": "Can your team translate our public marketing website into French and German before our trade show next month?",
+    "expectTop": [],
+    "expectVerdict": "no precedent"
+  }
+]

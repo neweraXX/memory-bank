@@ -1,0 +1,26 @@
+{
+  "name": "memory-bank",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "index": "node scripts/build-index.ts",
+    "typecheck": "tsc --noEmit",
+    "eval": "node scripts/eval.ts",
+    "precompute": "node scripts/precompute.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^5.9.3"
+  },
+  "private": true
+}

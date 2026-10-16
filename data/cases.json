@@ -1,0 +1,559 @@
+[
+  {
+    "id": "KST-104",
+    "title": "Salesforce to Kestrel migration for Corvid Logistics",
+    "type": "Data migration",
+    "client": { "name": "Corvid Logistics", "segment": "Mid-market", "industry": "Logistics" },
+    "request": "We are moving off Salesforce at the end of the quarter. Please bring over all accounts, contacts and open opportunities so our account managers can work in Kestrel from day one.",
+    "attributes": { "systems": ["Salesforce"], "volume": 38000, "volumeUnit": "records", "deadlineDays": 30, "languages": ["English"], "region": "US", "tags": ["crm migration", "deduplication", "picklist mapping", "dry run"] },
+    "owner": "Minh Tran",
+    "team": ["Tom Becker"],
+    "opened": "2025-03-03",
+    "closed": "2025-04-02",
+    "estimateDays": 10,
+    "actualDays": 18,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-03-03", "source": "ticket", "author": "Minh Tran", "text": "Kickoff. Scope: Account, Contact, Opportunity (open only). Client exports via Data Loader, we transform and load. Estimate 10 working days." },
+      { "date": "2025-03-10", "source": "chat", "author": "Tom Becker", "text": "first dry run done. 38k rows in, but ~4.1k accounts look like dupes (same company, diff owner/region). do we merge??" },
+      { "date": "2025-03-12", "source": "email", "author": "Corvid Logistics (ops lead)", "text": "Please do NOT merge accounts owned by different regions, they are separate customers for us. Also the Stage picklist has values you don't support, e.g. 'Verbal Yes'." },
+      { "date": "2025-03-18", "source": "note", "author": "Minh Tran", "text": "Dedupe rule only agreed on day 11: merge on domain + billing country, never across regions. Picklist mapping sheet signed by client. Second dry run needed, plan slips one week." },
+      { "date": "2025-03-27", "source": "ticket", "author": "Minh Tran", "text": "Final load OK. 34,112 records after agreed merges. Client sign-off received 2 Apr." }
+    ],
+    "resolution": "Migrated 34,112 records after an agreed dedupe rule (domain + billing country, never across regions) and a client-signed picklist mapping. Took two dry runs.",
+    "lessons": [
+      "Agree the dedupe rule in writing before the first dry run. Waiting for it cost us a full week.",
+      "Unsupported picklist values always show up. Send the mapping sheet on day 1 and get it signed.",
+      "Plan for two dry runs, not one."
+    ],
+    "artifacts": [
+      { "name": "sf-export-mapper.py", "kind": "script", "summary": "Transforms Salesforce Data Loader CSVs into Kestrel import format, with picklist mapping from a sheet." },
+      { "name": "Migration dedupe checklist v1", "kind": "checklist", "summary": "Questions to agree with the client before deduplicating accounts and contacts." }
+    ]
+  },
+  {
+    "id": "KST-109",
+    "title": "Okta SAML SSO for Lakeview Asset Management",
+    "type": "SSO & provisioning",
+    "client": { "name": "Lakeview Asset Management", "segment": "Enterprise", "industry": "Asset management" },
+    "request": "Our security team requires all users to sign in through Okta. Can you enable SSO before our next audit?",
+    "attributes": { "systems": ["Okta"], "volume": 400, "volumeUnit": "users", "deadlineDays": 10, "region": "US", "tags": ["saml", "sso", "audit"] },
+    "owner": "Daniel Okafor",
+    "team": [],
+    "opened": "2025-03-17",
+    "closed": "2025-03-20",
+    "estimateDays": 3,
+    "actualDays": 3,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-03-17", "source": "ticket", "author": "Daniel Okafor", "text": "Sent SAML metadata checklist to client IT (entity ID, ACS URL, NameID = email)." },
+      { "date": "2025-03-18", "source": "chat", "author": "Daniel Okafor", "text": "test login fails with 'assertion not yet valid'. their IdP clock is ~3 min ahead" },
+      { "date": "2025-03-19", "source": "note", "author": "Daniel Okafor", "text": "Allowed 5 min clock skew on our side, logins OK. Enforced SSO for all users after client confirmed break-glass admin account." }
+    ],
+    "resolution": "Okta SAML enabled with 5 minutes clock skew tolerance and a break-glass admin account kept outside SSO.",
+    "lessons": [
+      "Always keep one break-glass admin outside SSO before enforcing it.",
+      "'Assertion not yet valid' is almost always clock skew."
+    ],
+    "artifacts": [
+      { "name": "SAML troubleshooting runbook", "kind": "runbook", "summary": "Common SAML errors (clock skew, wrong ACS URL, NameID format) and how to fix each." }
+    ]
+  },
+  {
+    "id": "KST-112",
+    "title": "Nightly SAP export over SFTP for Orbis Manufacturing",
+    "type": "Integration",
+    "client": { "name": "Orbis Manufacturing", "segment": "Enterprise", "industry": "Manufacturing" },
+    "request": "Finance needs supplier and contract data from Kestrel in SAP every morning. SAP can pick up a file from SFTP.",
+    "attributes": { "systems": ["SAP", "SFTP"], "volume": 9000, "volumeUnit": "records/day", "deadlineDays": 30, "region": "EU", "tags": ["nightly job", "sftp", "timezone", "dst"] },
+    "owner": "Sofia Reyes",
+    "team": ["Priya Nair"],
+    "opened": "2025-03-24",
+    "closed": "2025-04-30",
+    "estimateDays": 10,
+    "actualDays": 16,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-03-24", "source": "ticket", "author": "Sofia Reyes", "text": "Scope: nightly delta export (suppliers, contracts) to client SFTP at 02:00 CET. SAP team owns the import side." },
+      { "date": "2025-04-07", "source": "email", "author": "Orbis Manufacturing (SAP team)", "text": "Some supplier names are cut off in SAP. Field is max 35 characters on our side." },
+      { "date": "2025-04-08", "source": "chat", "author": "Sofia Reyes", "text": "added truncation + a separate 'long_name' column, sap team ok with it" },
+      { "date": "2025-03-31", "source": "chat", "author": "Priya Nair", "text": "heads up: DST switched last night, the 02:00 CET job used local time -> one hour of changes missing from the delta" },
+      { "date": "2025-04-15", "source": "note", "author": "Sofia Reyes", "text": "Rewrote delta window in UTC with a 2h overlap and idempotent upsert keys on the SAP side. Backfilled the missing hour." }
+    ],
+    "resolution": "Nightly delta export in UTC with a 2-hour overlap window and idempotent keys, plus a long_name column for SAP's 35-character limit.",
+    "lessons": [
+      "Never schedule deltas in local time. Use UTC and an overlap window, the target must upsert idempotently.",
+      "Ask for the target system's field length limits during mapping, not after go-live.",
+      "Run a test across a DST change if the project spans March/October."
+    ],
+    "artifacts": [
+      { "name": "SFTP sync runbook", "kind": "runbook", "summary": "How to set up, monitor and backfill a nightly SFTP delta export." },
+      { "name": "SAP field mapping sheet", "kind": "template", "summary": "Kestrel to SAP field mapping including length limits." }
+    ]
+  },
+  {
+    "id": "KST-117",
+    "title": "Quarterly investor report export for Riverside Wealth",
+    "type": "Reporting",
+    "client": { "name": "Riverside Wealth", "segment": "Mid-market", "industry": "Wealth management" },
+    "request": "We send a quarterly PDF to each investor. Can Kestrel generate it from the data we already keep there?",
+    "attributes": { "systems": [], "volume": 650, "volumeUnit": "reports/quarter", "deadlineDays": 14, "region": "US", "tags": ["pdf", "investor report", "template"] },
+    "owner": "Linh Pham",
+    "team": ["An Nguyen"],
+    "opened": "2025-04-01",
+    "closed": "2025-04-14",
+    "estimateDays": 5,
+    "actualDays": 7,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-04-01", "source": "ticket", "author": "Linh Pham", "text": "Build PDF template from client brief. Fields: holdings, quarter performance, fees." },
+      { "date": "2025-04-07", "source": "email", "author": "Riverside Wealth (client services)", "text": "This doesn't look like our current report at all. Fees should be broken down per fund and we need our compliance footer." },
+      { "date": "2025-04-08", "source": "note", "author": "Linh Pham", "text": "Should have asked for last quarter's real PDF first. Rebuilt from their sample, 2 extra days." }
+    ],
+    "resolution": "PDF template rebuilt from the client's previous real report, with per-fund fee breakdown and compliance footer.",
+    "lessons": [
+      "For any report or document request, ask for a real sample of the current output before building anything."
+    ],
+    "artifacts": [
+      { "name": "Investor report PDF template", "kind": "template", "summary": "Quarterly investor statement with per-fund fees and configurable compliance footer." }
+    ]
+  },
+  {
+    "id": "KST-121",
+    "title": "Spreadsheet migration for Pinecrest Realty",
+    "type": "Data migration",
+    "client": { "name": "Pinecrest Realty", "segment": "Mid-market", "industry": "Real estate" },
+    "request": "All our client and property data lives in a few Excel files. We want it in Kestrel in two weeks.",
+    "attributes": { "systems": ["Excel"], "volume": 12000, "volumeUnit": "records", "deadlineDays": 14, "languages": ["English"], "region": "US", "tags": ["spreadsheet", "import template", "data validation"] },
+    "owner": "Linh Pham",
+    "team": ["Tom Becker"],
+    "opened": "2025-04-21",
+    "closed": "2025-04-28",
+    "estimateDays": 6,
+    "actualDays": 5,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-04-21", "source": "ticket", "author": "Linh Pham", "text": "Sent our import template with built-in data validation (dropdowns, date format) instead of taking their files as-is." },
+      { "date": "2025-04-24", "source": "chat", "author": "Tom Becker", "text": "their filled template is clean, only 37 rows rejected (bad dates). sent back with comments" },
+      { "date": "2025-04-28", "source": "ticket", "author": "Linh Pham", "text": "Loaded 11,963 records. Done a day early." }
+    ],
+    "resolution": "Client filled our validated import template, which cut cleanup almost to zero. Loaded 11,963 records.",
+    "lessons": [
+      "Send the validated import template first. Cleaning the client's own spreadsheets is where time disappears."
+    ],
+    "artifacts": [
+      { "name": "Client import template (xlsx) v2", "kind": "template", "summary": "Excel import template with dropdown validation and fixed date formats." }
+    ]
+  },
+  {
+    "id": "KST-125",
+    "title": "Month-end dashboard slowness escalated by Meridian Health Partners",
+    "type": "Performance",
+    "client": { "name": "Meridian Health Partners", "segment": "Enterprise", "industry": "Healthcare" },
+    "request": "Our finance dashboard takes more than 30 seconds to load at month-end. Our CFO cannot close the books. This needs to be fixed now.",
+    "attributes": { "systems": [], "volume": 200000, "volumeUnit": "records", "deadlineDays": 3, "region": "US", "tags": ["escalation", "slow dashboard", "month-end", "index", "batch job"] },
+    "owner": "Daniel Okafor",
+    "team": ["Priya Nair"],
+    "opened": "2025-05-30",
+    "closed": "2025-06-10",
+    "estimateDays": 3,
+    "actualDays": 9,
+    "outcome": "Escalated",
+    "timeline": [
+      { "date": "2025-05-30", "source": "email", "author": "Meridian Health Partners (CFO office)", "text": "Escalating: dashboard unusable for the third month in a row. We need a named owner and daily updates." },
+      { "date": "2025-06-02", "source": "chat", "author": "Daniel Okafor", "text": "can't reproduce today, loads in 2s. only slow at month-end??" },
+      { "date": "2025-06-04", "source": "note", "author": "Priya Nair", "text": "Found it: the dashboard filters on custom field 'cost_center' (not indexed) AND their month-end batch import of 60k invoices runs at the same time." },
+      { "date": "2025-06-06", "source": "ticket", "author": "Daniel Okafor", "text": "Index added on cost_center. Asked client to move batch import to 01:00. Daily status emails sent since 30 May." },
+      { "date": "2025-06-10", "source": "email", "author": "Meridian Health Partners (CFO office)", "text": "Month-end close went fine, dashboard loads in 3 seconds. Thanks for the daily updates." }
+    ],
+    "resolution": "Indexed the custom filter field and moved the client's month-end batch import out of business hours. Daily status emails during the escalation.",
+    "lessons": [
+      "Ask WHEN it is slow, not just what. Month-end slowness usually means a competing batch job.",
+      "Check filters on custom fields first: they are not indexed by default.",
+      "In an escalation, send a daily update even when there is no news. The client said it mattered most."
+    ],
+    "artifacts": [
+      { "name": "Performance triage checklist", "kind": "checklist", "summary": "Questions and queries to run when a client reports slowness." }
+    ]
+  },
+  {
+    "id": "KST-128",
+    "title": "Azure AD SSO and SCIM provisioning for Tidewater Insurance",
+    "type": "SSO & provisioning",
+    "client": { "name": "Tidewater Insurance", "segment": "Enterprise", "industry": "Insurance" },
+    "request": "We need SSO with Azure AD and automatic user provisioning and deprovisioning, so leavers lose access the same day.",
+    "attributes": { "systems": ["Azure AD", "SCIM"], "volume": 2500, "volumeUnit": "users", "deadlineDays": 20, "region": "EU", "tags": ["saml", "scim", "deprovisioning", "admin consent"] },
+    "owner": "Sofia Reyes",
+    "team": ["Daniel Okafor"],
+    "opened": "2025-06-02",
+    "closed": "2025-06-25",
+    "estimateDays": 5,
+    "actualDays": 14,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-06-02", "source": "ticket", "author": "Sofia Reyes", "text": "SAML + SCIM via Azure AD enterprise app. Needs Global Admin consent on client side." },
+      { "date": "2025-06-10", "source": "chat", "author": "Sofia Reyes", "text": "still no admin consent. our contact is in HR, not IT. lost a week" },
+      { "date": "2025-06-16", "source": "email", "author": "Tidewater Insurance (IT security)", "text": "In testing, a disabled user is still in the 'Claims' group in Kestrel. That fails our leaver policy." },
+      { "date": "2025-06-17", "source": "note", "author": "Sofia Reyes", "text": "Known bug ENG-882: SCIM deprovision deactivates the user but leaves group memberships. Fixed in release 4.12. Client tenant upgraded early." },
+      { "date": "2025-06-24", "source": "ticket", "author": "Daniel Okafor", "text": "Department attribute mapped to Kestrel teams. Leaver test passed with IT security watching." }
+    ],
+    "resolution": "Azure AD SAML + SCIM live after early upgrade to release 4.12 (fix for ENG-882) and a witnessed leaver test.",
+    "lessons": [
+      "Get the client's IT admin (the person who can grant consent) named at kickoff. Business contacts cannot do it.",
+      "Test deprovisioning explicitly, including group memberships. Security teams will.",
+      "SCIM needs release 4.12 or later."
+    ],
+    "artifacts": [
+      { "name": "Azure AD SCIM setup guide", "kind": "doc", "summary": "Step-by-step Azure AD enterprise app setup, attribute mapping and leaver test script." }
+    ]
+  },
+  {
+    "id": "KST-131",
+    "title": "Bulk investor onboarding with e-sign templates for Sable Ventures",
+    "type": "Onboarding & templates",
+    "client": { "name": "Sable Ventures", "segment": "Enterprise", "industry": "Venture capital" },
+    "request": "We are closing a new fund and need to onboard about 3,000 investors, each signing a subscription agreement in Kestrel.",
+    "attributes": { "systems": [], "volume": 3000, "volumeUnit": "investors", "deadlineDays": 21, "region": "US", "tags": ["e-sign", "subscription agreement", "template tagging", "bulk invite"] },
+    "owner": "Marco Bianchi",
+    "team": ["An Nguyen"],
+    "opened": "2025-07-07",
+    "closed": "2025-07-28",
+    "estimateDays": 8,
+    "actualDays": 13,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-07-07", "source": "ticket", "author": "Marco Bianchi", "text": "Tag signature/date/initial fields on the subscription agreement PDF, then bulk invite 3,000 investors." },
+      { "date": "2025-07-14", "source": "email", "author": "Sable Ventures (legal counsel)", "text": "Attached is the final version of the agreement, we added two pages on side letters." },
+      { "date": "2025-07-15", "source": "chat", "author": "Marco Bianchi", "text": "new pdf shifts every page after p.12, all my tags are off. retagging 41 fields" },
+      { "date": "2025-07-22", "source": "note", "author": "Marco Bianchi", "text": "Retagged and re-tested with 5 internal signers before the bulk invite. Asked legal to confirm this is FINAL in writing." }
+    ],
+    "resolution": "Template retagged on the final PDF, tested with 5 internal signers, then 3,000 invites sent in batches of 500.",
+    "lessons": [
+      "Freeze the document version in writing before tagging fields. Any late page change breaks every tag after it.",
+      "Test with a few internal signers before a bulk invite.",
+      "Send bulk invites in batches of 500 to keep bounce handling manageable."
+    ],
+    "artifacts": [
+      { "name": "E-sign template tagging checklist", "kind": "checklist", "summary": "Document freeze, field tagging and signer test steps before a bulk e-sign campaign." }
+    ]
+  },
+  {
+    "id": "KST-133",
+    "title": "HubSpot to Kestrel migration for Saffron Retail Group",
+    "type": "Data migration",
+    "client": { "name": "Saffron Retail Group", "segment": "Enterprise", "industry": "Retail" },
+    "request": "Migrate our CRM from HubSpot: companies, contacts, deals and notes. We want to switch off HubSpot in six weeks.",
+    "attributes": { "systems": ["HubSpot"], "volume": 120000, "volumeUnit": "records", "deadlineDays": 45, "languages": ["English"], "region": "US", "tags": ["crm migration", "api rate limit", "attachments", "scope creep", "incremental export"] },
+    "owner": "Tom Becker",
+    "team": ["Linh Pham"],
+    "opened": "2025-08-04",
+    "closed": "2025-09-19",
+    "estimateDays": 15,
+    "actualDays": 24,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2025-08-04", "source": "ticket", "author": "Tom Becker", "text": "Export through HubSpot API. Objects: companies, contacts, deals, notes. Estimate 15 days." },
+      { "date": "2025-08-08", "source": "chat", "author": "Tom Becker", "text": "hubspot api throttling us hard (429s). full export would take ~5 days at this rate" },
+      { "date": "2025-08-19", "source": "email", "author": "Saffron Retail Group (CRM manager)", "text": "Where are the attachments? Our team relies on the contracts attached to deals. About 40 GB." },
+      { "date": "2025-08-20", "source": "note", "author": "Linh Pham", "text": "Attachments were never in the written scope. Agreed change request: +6 days." },
+      { "date": "2025-09-05", "source": "note", "author": "Tom Becker", "text": "Switched to incremental export by last-modified date with exponential backoff. Final delta on cutover night took 40 minutes." }
+    ],
+    "resolution": "Incremental export by last-modified date with backoff, plus attachments added via a change request. 120k records and 40 GB of files.",
+    "lessons": [
+      "Ask explicitly about attachments and files in the scope questionnaire.",
+      "Expect API rate limits on SaaS CRMs: export incrementally by last-modified date and keep the final delta small.",
+      "Write scope down per object. 'Migrate our CRM' means different things to everyone."
+    ],
+    "artifacts": [
+      { "name": "hubspot-incremental-export.js", "kind": "script", "summary": "Incremental HubSpot export by last-modified date with exponential backoff on 429s." },
+      { "name": "Migration scope questionnaire", "kind": "checklist", "summary": "Per-object scope questions including attachments, history and inactive records." }
+    ]
+  },
+  {
+    "id": "KST-139",
+    "title": "Two-way Salesforce sync for Alder & Finch Capital",
+    "type": "Integration",
+    "client": { "name": "Alder & Finch Capital", "segment": "Enterprise", "industry": "Private equity" },
+    "request": "Our sales team stays in Salesforce, operations work in Kestrel. Contacts and accounts must stay in sync both ways.",
+    "attributes": { "systems": ["Salesforce"], "volume": 25000, "volumeUnit": "records", "deadlineDays": 40, "region": "US", "tags": ["two-way sync", "sync loop", "conflict resolution"] },
+    "owner": "Priya Nair",
+    "team": ["Sofia Reyes"],
+    "opened": "2025-09-01",
+    "closed": "2025-10-03",
+    "estimateDays": 20,
+    "actualDays": 22,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-09-01", "source": "ticket", "author": "Priya Nair", "text": "Two-way sync for Account and Contact. Rule agreed: last write wins, except owner field always from Salesforce." },
+      { "date": "2025-09-15", "source": "chat", "author": "Sofia Reyes", "text": "we have a ping-pong: update in SF -> we write -> SF trigger fires -> writes back. infinite loop on 30 records" },
+      { "date": "2025-09-17", "source": "note", "author": "Priya Nair", "text": "Added origin flag + 'last synced hash' so we skip echoes of our own writes. Pattern documented." }
+    ],
+    "resolution": "Two-way sync with an origin flag and last-synced hash to stop echo loops, and an agreed per-field conflict rule.",
+    "lessons": [
+      "Every two-way sync needs echo protection from day one (origin flag + hash).",
+      "Agree conflict rules per field with the client, in writing."
+    ],
+    "artifacts": [
+      { "name": "Sync loop guard pattern", "kind": "doc", "summary": "Design note on origin flags and hashes to prevent two-way sync loops." }
+    ]
+  },
+  {
+    "id": "KST-143",
+    "title": "Scheduled exports to Snowflake for Vantage Pointe Advisors",
+    "type": "Reporting",
+    "client": { "name": "Vantage Pointe Advisors", "segment": "Enterprise", "industry": "Investment advisory" },
+    "request": "Our data team wants all Kestrel activity data in our Snowflake warehouse daily for their own dashboards.",
+    "attributes": { "systems": ["Snowflake"], "volume": 2000000, "volumeUnit": "rows", "deadlineDays": 21, "region": "US", "tags": ["data warehouse", "scheduled export", "schema"] },
+    "owner": "Tom Becker",
+    "team": [],
+    "opened": "2025-10-06",
+    "closed": "2025-10-14",
+    "estimateDays": 6,
+    "actualDays": 6,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-10-06", "source": "ticket", "author": "Tom Becker", "text": "Daily export to client's Snowflake stage. Agreed schema doc with their data team first." },
+      { "date": "2025-10-13", "source": "note", "author": "Tom Becker", "text": "2M rows initial load, then daily deltas. Their team signed the schema doc on day 1, no surprises." }
+    ],
+    "resolution": "Daily delta export to Snowflake against a schema the client's data team signed on day 1.",
+    "lessons": [
+      "With data teams, sign the schema doc on day 1. It removed every later question."
+    ],
+    "artifacts": [
+      { "name": "Warehouse export config template", "kind": "template", "summary": "Config and schema doc template for scheduled warehouse exports (Snowflake, BigQuery)." }
+    ]
+  },
+  {
+    "id": "KST-147",
+    "title": "Dynamics 365 migration with Vietnamese and Japanese data for Eastwind Shipping",
+    "type": "Data migration",
+    "client": { "name": "Eastwind Shipping", "segment": "Enterprise", "industry": "Shipping" },
+    "request": "Move our customer and contract records from Dynamics 365 into Kestrel. Our offices are in Singapore, Ho Chi Minh City and Osaka.",
+    "attributes": { "systems": ["Dynamics 365"], "volume": 55000, "volumeUnit": "records", "deadlineDays": 30, "languages": ["English", "Vietnamese", "Japanese"], "region": "APAC (Singapore residency)", "tags": ["crm migration", "encoding", "utf-8", "data residency", "re-import"] },
+    "owner": "Minh Tran",
+    "team": ["Tom Becker"],
+    "opened": "2025-10-20",
+    "closed": "2025-12-05",
+    "estimateDays": 12,
+    "actualDays": 26,
+    "outcome": "Escalated",
+    "timeline": [
+      { "date": "2025-10-20", "source": "ticket", "author": "Minh Tran", "text": "Dynamics export to CSV by client IT, we transform with the usual mapper. Estimate 12 days." },
+      { "date": "2025-10-22", "source": "email", "author": "Eastwind Shipping (compliance)", "text": "Reminder: our data must be processed and stored in Singapore only." },
+      { "date": "2025-10-23", "source": "chat", "author": "Minh Tran", "text": "we're on the US tenant by default, need to redo env in SG region. +3 days" },
+      { "date": "2025-11-10", "source": "email", "author": "Eastwind Shipping (HCMC office)", "text": "Customer names in Vietnamese are broken after go-live, e.g. 'CÃ´ng ty' instead of 'Công ty'. Japanese names in Osaka are question marks. This is unacceptable." },
+      { "date": "2025-11-11", "source": "note", "author": "Minh Tran", "text": "Root cause: client exported CSV in Windows-1252, not UTF-8. Our load did not validate encoding. ~18k records affected. Re-export and re-import planned." },
+      { "date": "2025-11-24", "source": "note", "author": "Tom Becker", "text": "Wrote encoding-check.py: flags mojibake patterns before load. Re-import done, native speakers in HCMC and Osaka checked 200 samples each." }
+    ],
+    "resolution": "Rebuilt in the Singapore region, then a full re-import from UTF-8 exports after mojibake broke ~18k Vietnamese and Japanese records. Validated by native speakers.",
+    "lessons": [
+      "Force UTF-8 exports and run encoding-check.py before ANY load with non-English data.",
+      "Have a native speaker check a sample of each language before go-live, not after.",
+      "Check data residency at kickoff. Moving to another region later cost 3 days."
+    ],
+    "artifacts": [
+      { "name": "encoding-check.py", "kind": "script", "summary": "Detects mojibake and wrong encodings in CSV files before load (Vietnamese, Japanese, accented Latin)." },
+      { "name": "APAC residency checklist", "kind": "checklist", "summary": "Which region/tenant to use for APAC clients and what to confirm at kickoff." }
+    ]
+  },
+  {
+    "id": "KST-151",
+    "title": "Google Workspace SSO for Juniper Biotech",
+    "type": "SSO & provisioning",
+    "client": { "name": "Juniper Biotech", "segment": "Mid-market", "industry": "Biotech" },
+    "request": "Can our team log in with their Google accounts?",
+    "attributes": { "systems": ["Google Workspace"], "volume": 180, "volumeUnit": "users", "deadlineDays": 7, "region": "US", "tags": ["saml", "sso"] },
+    "owner": "An Nguyen",
+    "team": ["Daniel Okafor"],
+    "opened": "2025-11-03",
+    "closed": "2025-11-05",
+    "estimateDays": 2,
+    "actualDays": 2,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-11-03", "source": "ticket", "author": "An Nguyen", "text": "Used SAML troubleshooting runbook + Google Workspace custom SAML app. Break-glass admin kept." },
+      { "date": "2025-11-05", "source": "ticket", "author": "An Nguyen", "text": "Live for 180 users. No issues." }
+    ],
+    "resolution": "Google Workspace custom SAML app, done by L1 using the existing runbook.",
+    "lessons": [
+      "With the runbook, simple SSO is an L1 task. No need to pull in a solutions engineer."
+    ],
+    "artifacts": []
+  },
+  {
+    "id": "KST-155",
+    "title": "Slack notifications for Copperline Telecom",
+    "type": "Integration",
+    "client": { "name": "Copperline Telecom", "segment": "Mid-market", "industry": "Telecom" },
+    "request": "Post a message to our Slack channel when a contract is approved in Kestrel.",
+    "attributes": { "systems": ["Slack"], "deadlineDays": 7, "region": "US", "tags": ["webhook", "notification"] },
+    "owner": "An Nguyen",
+    "team": [],
+    "opened": "2025-12-01",
+    "closed": "2025-12-03",
+    "estimateDays": 2,
+    "actualDays": 2,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2025-12-01", "source": "ticket", "author": "An Nguyen", "text": "Configured outgoing webhook on 'contract.approved' to client's Slack incoming webhook URL." },
+      { "date": "2025-12-03", "source": "chat", "author": "An Nguyen", "text": "client confirmed messages arrive. added contract owner name to the message on their request" }
+    ],
+    "resolution": "Outgoing webhook on contract.approved to a Slack incoming webhook.",
+    "lessons": [],
+    "artifacts": []
+  },
+  {
+    "id": "KST-158",
+    "title": "Bulk upload API timeouts for Saffron Retail Group",
+    "type": "Performance",
+    "client": { "name": "Saffron Retail Group", "segment": "Enterprise", "industry": "Retail" },
+    "request": "Our nightly upload of supplier documents keeps timing out. We upload about 300,000 documents a month.",
+    "attributes": { "systems": [], "volume": 300000, "volumeUnit": "documents/month", "deadlineDays": 10, "region": "US", "tags": ["api", "timeout", "batch endpoint", "rate limit"] },
+    "owner": "Priya Nair",
+    "team": [],
+    "opened": "2026-01-12",
+    "closed": "2026-01-16",
+    "estimateDays": 4,
+    "actualDays": 4,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2026-01-12", "source": "ticket", "author": "Priya Nair", "text": "Client sends one API request per document, ~10k in a burst. Hits our rate limit, then timeouts." },
+      { "date": "2026-01-15", "source": "note", "author": "Priya Nair", "text": "Moved them to the batch endpoint (100 docs per call) with retries. Nightly run now 25 minutes." }
+    ],
+    "resolution": "Client switched to the batch upload endpoint with retries.",
+    "lessons": [
+      "Timeouts during bulk uploads: check the client's call pattern before touching our infrastructure."
+    ],
+    "artifacts": []
+  },
+  {
+    "id": "KST-160",
+    "title": "User onboarding and approval workflow for Quill & Co Legal",
+    "type": "Onboarding & templates",
+    "client": { "name": "Quill & Co Legal", "segment": "Mid-market", "industry": "Legal services" },
+    "request": "Onboard our 800 staff and set up a two-step approval for engagement letters.",
+    "attributes": { "systems": [], "volume": 800, "volumeUnit": "users", "deadlineDays": 14, "region": "UK", "tags": ["approval workflow", "bulk invite", "roles"] },
+    "owner": "Linh Pham",
+    "team": ["An Nguyen"],
+    "opened": "2026-02-02",
+    "closed": "2026-02-09",
+    "estimateDays": 5,
+    "actualDays": 5,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2026-02-02", "source": "ticket", "author": "Linh Pham", "text": "Roles matrix agreed with client first, then bulk invite in batches of 200 using the e-sign checklist steps for the letter template." },
+      { "date": "2026-02-09", "source": "ticket", "author": "Linh Pham", "text": "800 users active, approval workflow live." }
+    ],
+    "resolution": "Roles matrix first, then batched invites and a two-step approval workflow.",
+    "lessons": [
+      "Agree the roles matrix before inviting anyone. Fixing permissions after invites is painful."
+    ],
+    "artifacts": [
+      { "name": "Roles matrix template", "kind": "template", "summary": "Spreadsheet to agree roles and permissions with the client before onboarding." }
+    ]
+  },
+  {
+    "id": "KST-162",
+    "title": "Salesforce migration for Granite Peak Funds",
+    "type": "Data migration",
+    "client": { "name": "Granite Peak Funds", "segment": "Enterprise", "industry": "Fund management" },
+    "request": "Bring our Salesforce accounts, contacts and investor relationships into Kestrel within three weeks.",
+    "attributes": { "systems": ["Salesforce"], "volume": 70000, "volumeUnit": "records", "deadlineDays": 21, "languages": ["English"], "region": "US", "tags": ["crm migration", "deduplication", "picklist mapping", "reuse"] },
+    "owner": "Linh Pham",
+    "team": ["Tom Becker"],
+    "opened": "2026-03-02",
+    "closed": "2026-03-17",
+    "estimateDays": 12,
+    "actualDays": 11,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2026-03-02", "source": "ticket", "author": "Linh Pham", "text": "Reusing sf-export-mapper.py and dedupe checklist from KST-104. Dedupe rule and picklist sheet sent on day 1." },
+      { "date": "2026-03-04", "source": "email", "author": "Granite Peak Funds (operations)", "text": "Dedupe rule approved: merge on domain, keep separate fund entities apart. Picklist sheet signed." },
+      { "date": "2026-03-16", "source": "note", "author": "Tom Becker", "text": "Two dry runs as planned. Final load 66,480 records. Updated checklist to v2 with the 'fund entities' question." }
+    ],
+    "resolution": "Reused the KST-104 mapper and dedupe checklist, got sign-off on day 2, finished a day early. Checklist updated to v2.",
+    "lessons": [
+      "Reusing KST-104's mapper and checklist saved about a week compared to KST-104.",
+      "For fund managers, ask whether separate fund entities must stay separate records."
+    ],
+    "artifacts": [
+      { "name": "Migration dedupe checklist v2", "kind": "checklist", "summary": "v1 plus fund-entity and regional ownership questions." }
+    ]
+  },
+  {
+    "id": "KST-166",
+    "title": "NetSuite integration for Halcyon Energy (cancelled)",
+    "type": "Integration",
+    "client": { "name": "Halcyon Energy", "segment": "Enterprise", "industry": "Energy" },
+    "request": "Sync approved contracts and vendor invoices from Kestrel into NetSuite.",
+    "attributes": { "systems": ["NetSuite"], "volume": 4000, "volumeUnit": "records/month", "deadlineDays": 30, "region": "US", "tags": ["erp", "api licence", "cancelled"] },
+    "owner": "Marco Bianchi",
+    "team": ["Priya Nair"],
+    "opened": "2026-04-06",
+    "closed": "2026-04-22",
+    "estimateDays": 15,
+    "actualDays": 12,
+    "outcome": "Cancelled",
+    "timeline": [
+      { "date": "2026-04-06", "source": "ticket", "author": "Marco Bianchi", "text": "Build against NetSuite SuiteTalk REST API. Client to provide integration role and token." },
+      { "date": "2026-04-17", "source": "email", "author": "Halcyon Energy (finance systems)", "text": "Our NetSuite edition doesn't include the SuiteTalk API add-on. Procurement says it will take a quarter to buy." },
+      { "date": "2026-04-22", "source": "note", "author": "Marco Bianchi", "text": "Project cancelled after 12 days of build. Should have checked their licence in week 1." }
+    ],
+    "resolution": "Cancelled: client's NetSuite edition had no API access. Discovered after 12 days of work.",
+    "lessons": [
+      "In week 1, verify the client actually has API access/licences on the target system (ask for a test call)."
+    ],
+    "artifacts": []
+  },
+  {
+    "id": "KST-170",
+    "title": "Okta SCIM provisioning for Northgate Credit Union",
+    "type": "SSO & provisioning",
+    "client": { "name": "Northgate Credit Union", "segment": "Enterprise", "industry": "Banking" },
+    "request": "We already use Okta SSO with you. Now we want Okta to create and remove users automatically.",
+    "attributes": { "systems": ["Okta", "SCIM"], "volume": 1200, "volumeUnit": "users", "deadlineDays": 15, "region": "US", "tags": ["scim", "jit provisioning", "duplicate users", "group push"] },
+    "owner": "Daniel Okafor",
+    "team": ["An Nguyen"],
+    "opened": "2026-05-11",
+    "closed": "2026-05-26",
+    "estimateDays": 4,
+    "actualDays": 9,
+    "outcome": "Late",
+    "timeline": [
+      { "date": "2026-05-11", "source": "ticket", "author": "Daniel Okafor", "text": "Enable SCIM on existing Okta app. Release 4.15, so ENG-882 not a concern." },
+      { "date": "2026-05-14", "source": "chat", "author": "An Nguyen", "text": "~140 duplicate users appeared. JIT provisioning was still on, SCIM created a second account when emails differed in case" },
+      { "date": "2026-05-19", "source": "note", "author": "Daniel Okafor", "text": "Disabled JIT, merged duplicates by lower-cased email, renamed 6 Okta push groups that clashed with existing Kestrel team names." }
+    ],
+    "resolution": "JIT disabled, duplicates merged by lower-cased email, clashing push groups renamed. Then SCIM enabled cleanly.",
+    "lessons": [
+      "Disable JIT provisioning before enabling SCIM, and normalise existing users' emails to lower case first.",
+      "Check Okta push group names against existing Kestrel team names before the first push."
+    ],
+    "artifacts": []
+  },
+  {
+    "id": "KST-174",
+    "title": "Excel investor data import with Korean names for Sable Ventures Fund II",
+    "type": "Data migration",
+    "client": { "name": "Sable Ventures", "segment": "Enterprise", "industry": "Venture capital" },
+    "request": "For Fund II we have investor records in Excel from our Seoul office. Please import them before the first close.",
+    "attributes": { "systems": ["Excel"], "volume": 9000, "volumeUnit": "records", "deadlineDays": 10, "languages": ["English", "Korean"], "region": "US", "tags": ["spreadsheet", "import template", "encoding", "utf-8"] },
+    "owner": "Tom Becker",
+    "team": ["An Nguyen"],
+    "opened": "2026-07-06",
+    "closed": "2026-07-13",
+    "estimateDays": 5,
+    "actualDays": 5,
+    "outcome": "On time",
+    "timeline": [
+      { "date": "2026-07-06", "source": "ticket", "author": "Tom Becker", "text": "Lesson from KST-147: asked for UTF-8 CSV, ran encoding-check.py on the first file. 0 issues. Used import template v2." },
+      { "date": "2026-07-10", "source": "chat", "author": "An Nguyen", "text": "seoul office checked 100 korean names in staging, all good" },
+      { "date": "2026-07-13", "source": "ticket", "author": "Tom Becker", "text": "8,912 records loaded before first close." }
+    ],
+    "resolution": "UTF-8 + encoding-check.py + native-speaker sample check before load. No encoding issues.",
+    "lessons": [
+      "The KST-147 encoding routine works: zero mojibake when applied up front."
+    ],
+    "artifacts": []
+  }
+]
