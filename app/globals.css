@@ -364,8 +364,8 @@ table.diff th {
 }
 .signals {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px 8px;
   font-size: 11.5px;
   color: var(--muted);
 }
